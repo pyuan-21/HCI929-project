@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Vuforia;
 
-public class ImgButtonScript : MonoBehaviour
+public class SizeButtonScript : MonoBehaviour
 {
     public VirtualButtonBehaviour Vb;
 
@@ -17,7 +17,7 @@ public class ImgButtonScript : MonoBehaviour
 
     public void onButtonPressed(VirtualButtonBehaviour vb)
     {
-        Debug.Log("********** IMAGE BUTTON PRESSED **********");
+        Debug.Log("******** SIZE BUTTON PRESSED *******");
     }
 
     public void onButtonReleased(VirtualButtonBehaviour vb)
