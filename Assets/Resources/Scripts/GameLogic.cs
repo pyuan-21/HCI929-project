@@ -25,15 +25,17 @@ namespace Assets.Resources.Scripts
         private int mCellColNum = 3;
         private List<GameObject> mImageTargetList;
         private Dictionary<GameObject, int> mImageTarget2ImageIndexDict;
-        private bool hasInit;
-        private Action updateActList;
-        private Dictionary<string, List<Texture2D>> textureDict;
+        private bool mHasInit;
+        private Action mUpdateActList;
+        private Dictionary<string, List<Texture2D>> mTextureDict;
+        private int mCurrentImgIndex = 0;
+        private List<String> mImageNameList;
 
         private GameLogic()
         {
             mImageTargetList = new List<GameObject>();
             mImageTarget2ImageIndexDict = new Dictionary<GameObject, int>();
-            hasInit = false;
+            mHasInit = false;
         }
 
         public void AddImageTarget(GameObject obj)
@@ -41,13 +43,13 @@ namespace Assets.Resources.Scripts
             mImageTargetList.Add(obj);
             if(mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
-                if (!hasInit)
+                if (!mHasInit)
                 {
                     OnInitGame();
                 }
                 else
                 {
-                    updateActList += CheckGameOver;
+                    mUpdateActList += CheckGameOver;
                 }
             }
         }
@@ -55,9 +57,9 @@ namespace Assets.Resources.Scripts
         public void RemoveImageTarget(GameObject obj)
         {
             mImageTargetList.Remove(obj);
-            if (hasInit)
+            if (mHasInit)
             {
-                updateActList -= CheckGameOver;
+                mUpdateActList -= CheckGameOver;
             }
         }
 
@@ -181,12 +183,17 @@ namespace Assets.Resources.Scripts
 
                     //set corresponding texture
                     GameObject cellObj = Utility.FindGameObject(mImageTargetList[i], "cell");
+                    Texture2D texture = null;
+                    if (imageIndex != 8)
+                    {
+                        //imageIndex = 8 make it blank
+                        texture = mTextureDict[mImageNameList[mCurrentImgIndex]][imageIndex];
+                    }
                     Renderer rend = cellObj.GetComponent<Renderer>();
-                    var texture = UnityEngine.Resources.Load(String.Format("Images/cell_{0}", imageIndex)) as Texture;
                     rend.material.mainTexture = texture;
                 }
 
-                hasInit = true;
+                mHasInit = true;
             }
             catch (Exception e)
             {
@@ -290,13 +297,14 @@ namespace Assets.Resources.Scripts
 
         public void Update()
         {
-            updateActList?.Invoke();
+            mUpdateActList?.Invoke();
         }
 
         public void Init(List<String> imageNameList)
         {
             //todo if it has more than one parameters, using dict 'cfg' to pass these parameters.
-            CreateAllImages(imageNameList);
+            mImageNameList = imageNameList;
+            CreateAllImages();
             //Test();
         }
 
@@ -308,17 +316,17 @@ namespace Assets.Resources.Scripts
                 if(cellObj != null)
                 {
                     Renderer rend = cellObj.GetComponent<Renderer>();
-                    var texture = textureDict["cat"][i];
+                    var texture = mTextureDict["cat"][i];
                     rend.material.mainTexture = texture;
                 }
             }
         }
-        private void CreateAllImages(List<String> imageNameList)
+        private void CreateAllImages()
         {
-            textureDict = new Dictionary<string, List<Texture2D>>();
-            for(int i = 0; i < imageNameList.Count; i++)
+            mTextureDict = new Dictionary<string, List<Texture2D>>();
+            for(int i = 0; i < mImageNameList.Count; i++)
             {
-                var imageName = imageNameList[i];
+                var imageName = mImageNameList[i];
                 var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", imageName)) as Texture2D;
                 //split the original texture into 9 parts
                 var textureList = new List<Texture2D>();
@@ -354,7 +362,7 @@ namespace Assets.Resources.Scripts
                     newTexture.Apply();
                     textureList.Add(newTexture);
                 }
-                textureDict.Add(imageName, textureList);
+                mTextureDict.Add(imageName, textureList);
             }
         }
     }
