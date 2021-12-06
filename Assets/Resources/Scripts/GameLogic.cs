@@ -24,14 +24,15 @@ namespace Assets.Resources.Scripts
         private int mCellRowNum = 3;
         private int mCellColNum = 3;
         private List<GameObject> mImageTargetList;
-        private Dictionary<GameObject, int> mImageTarget2ImageIndexDic;
+        private Dictionary<GameObject, int> mImageTarget2ImageIndexDict;
         private bool hasInit;
         private Action updateActList;
+        private Dictionary<string, List<Texture2D>> textureDict;
 
         private GameLogic()
         {
             mImageTargetList = new List<GameObject>();
-            mImageTarget2ImageIndexDic = new Dictionary<GameObject, int>();
+            mImageTarget2ImageIndexDict = new Dictionary<GameObject, int>();
             hasInit = false;
         }
 
@@ -172,11 +173,11 @@ namespace Assets.Resources.Scripts
                 }
                 Debug.Log(String.Format("imageIndexList: {0}", imageIndexStr));
 
-                mImageTarget2ImageIndexDic.Clear();
+                mImageTarget2ImageIndexDict.Clear();
                 for(int i = 0; i < mImageTargetList.Count; i++)
                 {
                     int imageIndex = imageIndexList[i];
-                    mImageTarget2ImageIndexDic[mImageTargetList[i]] = imageIndex;
+                    mImageTarget2ImageIndexDict[mImageTargetList[i]] = imageIndex;
 
                     //set corresponding texture
                     GameObject cellObj = Utility.FindGameObject(mImageTargetList[i], "cell");
@@ -265,7 +266,7 @@ namespace Assets.Resources.Scripts
             //if all cell are matched to the correct sequence, from the first one to last one, the indices should be from 0 to N.
             for(int i = 0; i < mImageTargetList.Count; i++)
             {
-                if(i != mImageTarget2ImageIndexDic[mImageTargetList[i]])
+                if(i != mImageTarget2ImageIndexDict[mImageTargetList[i]])
                 {
                     return false;
                 }
@@ -290,6 +291,71 @@ namespace Assets.Resources.Scripts
         public void Update()
         {
             updateActList?.Invoke();
+        }
+
+        public void Init(List<String> imageNameList)
+        {
+            //todo if it has more than one parameters, using dict 'cfg' to pass these parameters.
+            CreateAllImages(imageNameList);
+            //Test();
+        }
+
+        private void Test()
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                var cellObj = GameObject.Find(String.Format("cell{0}", i + 1));
+                if(cellObj != null)
+                {
+                    Renderer rend = cellObj.GetComponent<Renderer>();
+                    var texture = textureDict["cat"][i];
+                    rend.material.mainTexture = texture;
+                }
+            }
+        }
+        private void CreateAllImages(List<String> imageNameList)
+        {
+            textureDict = new Dictionary<string, List<Texture2D>>();
+            for(int i = 0; i < imageNameList.Count; i++)
+            {
+                var imageName = imageNameList[i];
+                var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", imageName)) as Texture2D;
+                //split the original texture into 9 parts
+                var textureList = new List<Texture2D>();
+                int maxLen = Mathf.Max(originalTexture.width, originalTexture.height);//make it become a square image
+                int minWidth = (maxLen - originalTexture.width) / 2;
+                int maxWidth = (maxLen + originalTexture.width) / 2;
+                int minHeight = (maxLen - originalTexture.height) / 2;
+                int maxHeight = (maxLen + originalTexture.height) / 2;
+                for (int num = 0; num < 9; num++)
+                {
+                    var newTexture = new Texture2D(maxLen / 3, maxLen / 3, TextureFormat.ARGB32, false);
+                    for (int row = 0; row < maxLen / 3; row++)
+                    {
+                        for (int col = 0; col < maxLen / 3; col++)
+                        {
+                            //row,col starting from left-top
+                            int pixelRowIdx = row + (num % 3) * maxLen / 3;
+                            int pixelColIdx = col + (num / 3) * maxLen / 3;
+                            Color color = Color.white;
+                            //if row is inside [maxlen/2-width/2, maxlen/2+width/2), and col is inside [maxlen/2-height/2, maxlen/2+height/2)
+                            //take picture's color, otherwise, take white
+                            if (pixelRowIdx >= minWidth && pixelRowIdx < maxWidth && pixelColIdx >= minHeight && pixelColIdx < maxHeight)
+                            {
+                                //if row and col is [0, maxLen], and map the whole image
+                                //color = originalTexture.GetPixel(maxWidth - minWidth - (row - minWidth) - 1, maxHeight - minHeight - (col - minHeight) - 1);
+
+                                //color = originalTexture.GetPixel(maxWidth - pixelRowIdx - 1, maxHeight - pixelColIdx - 1);
+                                color = originalTexture.GetPixel(pixelRowIdx - minWidth, maxHeight - pixelColIdx - 1);
+                            }
+                            newTexture.SetPixel(maxLen / 3 - row + 1, col, color);
+                        }
+                    }
+                    newTexture.Apply();
+                    textureList.Add(newTexture);
+                }
+                textureDict.Add(imageName, textureList);
+            }
         }
     }
 }
