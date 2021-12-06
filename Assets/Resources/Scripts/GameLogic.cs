@@ -21,8 +21,8 @@ namespace Assets.Resources.Scripts
             }
         }
         #endregion
-        private int mCellRowNum = 2;
-        private int mCellColNum = 2;
+        private int mCellRowNum = 3;
+        private int mCellColNum = 3;
         private List<GameObject> mImageTargetList;
         private Dictionary<GameObject, int> mImageTarget2ImageIndexDic;
         private bool hasInit;
