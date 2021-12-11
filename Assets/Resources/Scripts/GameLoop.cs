@@ -23,12 +23,12 @@ public class GameLoop : MonoBehaviour
 
     void OnVuforiaInitialized(VuforiaInitError vuforiaInitError)
     {
-        if(vuforiaInitError!= VuforiaInitError.NONE)
+        if (vuforiaInitError != VuforiaInitError.NONE)
         {
             return;
         }
         Debug.Log("GameLoop.OnVuforiaInitialized");
-        
+
         GameLogic.Instance.Init(imageNameList);
     }
     private void Update()

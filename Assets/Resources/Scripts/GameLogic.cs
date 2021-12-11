@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace Assets.Resources.Scripts
         {
             get
             {
-                if(mInstance == null)
+                if (mInstance == null)
                 {
                     mInstance = new GameLogic();
                 }
@@ -41,7 +41,7 @@ namespace Assets.Resources.Scripts
         public void AddImageTarget(GameObject obj)
         {
             mImageTargetList.Add(obj);
-            if(mImageTargetList.Count >= mCellRowNum * mCellColNum)
+            if (mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
                 if (!mHasInit)
                 {
@@ -121,7 +121,7 @@ namespace Assets.Resources.Scripts
                         unMatchedNum++;
                     }
                 }
-                if(unMatchedNum >= needUnMatchedNum)
+                if (unMatchedNum >= needUnMatchedNum)
                 {
                     break;
                 }
@@ -169,14 +169,14 @@ namespace Assets.Resources.Scripts
 
                 //just for test
                 string imageIndexStr = "";
-                for(int i = 0; i < imageIndexList.Count; i++)
+                for (int i = 0; i < imageIndexList.Count; i++)
                 {
                     imageIndexStr += (imageIndexList[i] + ", ");
                 }
                 Debug.Log(String.Format("imageIndexList: {0}", imageIndexStr));
 
                 mImageTarget2ImageIndexDict.Clear();
-                for(int i = 0; i < mImageTargetList.Count; i++)
+                for (int i = 0; i < mImageTargetList.Count; i++)
                 {
                     int imageIndex = imageIndexList[i];
                     mImageTarget2ImageIndexDict[mImageTargetList[i]] = imageIndex;
@@ -207,14 +207,14 @@ namespace Assets.Resources.Scripts
             float angleOffset = 8f;//to visualize angle, use this link: https://www.visnos.com/demos/basic-angles
             float threshold = Mathf.Cos(Mathf.PI * angleOffset / 180);
             //check each vector from cell to its two closed neighbor is vertical
-            for(int i = 0; i < mImageTargetList.Count; i++)
+            for (int i = 0; i < mImageTargetList.Count; i++)
             {
                 int rowIndex = i / mCellColNum;
                 int colIndex = i % mCellColNum;
                 bool hasLeft = rowIndex - 1 >= 0;
                 bool hasRight = rowIndex + 1 <= mCellColNum - 1;
                 bool hasUp = colIndex - 1 >= 0;
-                bool hasDown= colIndex + 1 <= mCellRowNum - 1;
+                bool hasDown = colIndex + 1 <= mCellRowNum - 1;
                 int neighborIndex1, neighborIndex2;
                 if (hasLeft && hasUp)
                 {
@@ -222,13 +222,13 @@ namespace Assets.Resources.Scripts
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex - 1);
                     var v1 = new Vector2(mImageTargetList[neighborIndex1].transform.position.x, mImageTargetList[neighborIndex1].transform.position.y);
                     var v2 = new Vector2(mImageTargetList[neighborIndex2].transform.position.x, mImageTargetList[neighborIndex2].transform.position.y);
-                    if(Mathf.Abs(Vector2.Dot(v1, v2)) > threshold)
+                    if (Mathf.Abs(Vector2.Dot(v1, v2)) > threshold)
                     {
                         //considered as not vertical
                         return false;
                     }
                 }
-                if(hasLeft && hasDown)
+                if (hasLeft && hasDown)
                 {
                     neighborIndex1 = (rowIndex - 1) * mCellRowNum + colIndex;
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex + 1);
@@ -240,7 +240,7 @@ namespace Assets.Resources.Scripts
                         return false;
                     }
                 }
-                if(hasRight && hasUp)
+                if (hasRight && hasUp)
                 {
                     neighborIndex1 = (rowIndex + 1) * mCellRowNum + colIndex;
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex - 1);
@@ -252,7 +252,7 @@ namespace Assets.Resources.Scripts
                         return false;
                     }
                 }
-                if(hasRight && hasDown)
+                if (hasRight && hasDown)
                 {
                     neighborIndex1 = (rowIndex + 1) * mCellRowNum + colIndex;
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex + 1);
@@ -271,9 +271,9 @@ namespace Assets.Resources.Scripts
         private bool CheckIsAllMatch()
         {
             //if all cell are matched to the correct sequence, from the first one to last one, the indices should be from 0 to N.
-            for(int i = 0; i < mImageTargetList.Count; i++)
+            for (int i = 0; i < mImageTargetList.Count; i++)
             {
-                if(i != mImageTarget2ImageIndexDict[mImageTargetList[i]])
+                if (i != mImageTarget2ImageIndexDict[mImageTargetList[i]])
                 {
                     return false;
                 }
@@ -290,6 +290,11 @@ namespace Assets.Resources.Scripts
                 //check
                 if (CheckIsAllMatch())
                 {
+                    //display victory screen
+                    GameObject st = GameObject.Find("SolutionTarget");
+                    GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
+                    congrats.SetActive(true);
+
                     Debug.Log("Congratuations!!!");
                 }
             }
@@ -313,10 +318,10 @@ namespace Assets.Resources.Scripts
             for (int i = 0; i < 9; i++)
             {
                 var cellObj = GameObject.Find(String.Format("cell{0}", i + 1));
-                if(cellObj != null)
+                if (cellObj != null)
                 {
                     Renderer rend = cellObj.GetComponent<Renderer>();
-                    var texture = mTextureDict["cat"][i];
+                    var texture = mTextureDict["hibiscus"][i];
                     rend.material.mainTexture = texture;
                 }
             }
@@ -324,7 +329,7 @@ namespace Assets.Resources.Scripts
         private void CreateAllImages()
         {
             mTextureDict = new Dictionary<string, List<Texture2D>>();
-            for(int i = 0; i < mImageNameList.Count; i++)
+            for (int i = 0; i < mImageNameList.Count; i++)
             {
                 var imageName = mImageNameList[i];
                 var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", imageName)) as Texture2D;
