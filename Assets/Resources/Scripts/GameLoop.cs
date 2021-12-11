@@ -1,4 +1,5 @@
 using Assets.Resources.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,9 @@ using Vuforia;
 /// </summary>
 public class GameLoop : MonoBehaviour
 {
+    [SerializeField]
+    public List<String> imageNameList;
+
     void Start()
     {
         VuforiaApplication.Instance.OnVuforiaInitialized += OnVuforiaInitialized;
@@ -19,11 +23,13 @@ public class GameLoop : MonoBehaviour
 
     void OnVuforiaInitialized(VuforiaInitError vuforiaInitError)
     {
-        if(vuforiaInitError!= VuforiaInitError.NONE)
+        if (vuforiaInitError != VuforiaInitError.NONE)
         {
             return;
         }
         Debug.Log("GameLoop.OnVuforiaInitialized");
+
+        GameLogic.Instance.Init(imageNameList);
     }
     private void Update()
     {

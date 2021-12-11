@@ -13,7 +13,7 @@ namespace Assets.Resources.Scripts
         {
             get
             {
-                if(mInstance == null)
+                if (mInstance == null)
                 {
                     mInstance = new GameLogic();
                 }
@@ -24,29 +24,32 @@ namespace Assets.Resources.Scripts
         private int mCellRowNum = 3;
         private int mCellColNum = 3;
         private List<GameObject> mImageTargetList;
-        private Dictionary<GameObject, int> mImageTarget2ImageIndexDic;
-        private bool hasInit;
-        private Action updateActList;
+        private Dictionary<GameObject, int> mImageTarget2ImageIndexDict;
+        private bool mHasInit;
+        private Action mUpdateActList;
+        private Dictionary<string, List<Texture2D>> mTextureDict;
+        private int mCurrentImgIndex = 0;
+        private List<String> mImageNameList;
 
         private GameLogic()
         {
             mImageTargetList = new List<GameObject>();
-            mImageTarget2ImageIndexDic = new Dictionary<GameObject, int>();
-            hasInit = false;
+            mImageTarget2ImageIndexDict = new Dictionary<GameObject, int>();
+            mHasInit = false;
         }
 
         public void AddImageTarget(GameObject obj)
         {
             mImageTargetList.Add(obj);
-            if(mImageTargetList.Count >= mCellRowNum * mCellColNum)
+            if (mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
-                if (!hasInit)
+                if (!mHasInit)
                 {
                     OnInitGame();
                 }
                 else
                 {
-                    updateActList += CheckGameOver;
+                    mUpdateActList += CheckGameOver;
                 }
             }
         }
@@ -54,9 +57,9 @@ namespace Assets.Resources.Scripts
         public void RemoveImageTarget(GameObject obj)
         {
             mImageTargetList.Remove(obj);
-            if (hasInit)
+            if (mHasInit)
             {
-                updateActList -= CheckGameOver;
+                mUpdateActList -= CheckGameOver;
             }
         }
 
@@ -118,7 +121,7 @@ namespace Assets.Resources.Scripts
                         unMatchedNum++;
                     }
                 }
-                if(unMatchedNum >= needUnMatchedNum)
+                if (unMatchedNum >= needUnMatchedNum)
                 {
                     break;
                 }
@@ -166,26 +169,31 @@ namespace Assets.Resources.Scripts
 
                 //just for test
                 string imageIndexStr = "";
-                for(int i = 0; i < imageIndexList.Count; i++)
+                for (int i = 0; i < imageIndexList.Count; i++)
                 {
                     imageIndexStr += (imageIndexList[i] + ", ");
                 }
                 Debug.Log(String.Format("imageIndexList: {0}", imageIndexStr));
 
-                mImageTarget2ImageIndexDic.Clear();
-                for(int i = 0; i < mImageTargetList.Count; i++)
+                mImageTarget2ImageIndexDict.Clear();
+                for (int i = 0; i < mImageTargetList.Count; i++)
                 {
                     int imageIndex = imageIndexList[i];
-                    mImageTarget2ImageIndexDic[mImageTargetList[i]] = imageIndex;
+                    mImageTarget2ImageIndexDict[mImageTargetList[i]] = imageIndex;
 
                     //set corresponding texture
                     GameObject cellObj = Utility.FindGameObject(mImageTargetList[i], "cell");
+                    Texture2D texture = null;
+                    if (imageIndex != 8)
+                    {
+                        //imageIndex = 8 make it blank
+                        texture = mTextureDict[mImageNameList[mCurrentImgIndex]][imageIndex];
+                    }
                     Renderer rend = cellObj.GetComponent<Renderer>();
-                    var texture = UnityEngine.Resources.Load(String.Format("Images/cell_{0}", imageIndex)) as Texture;
                     rend.material.mainTexture = texture;
                 }
 
-                hasInit = true;
+                mHasInit = true;
             }
             catch (Exception e)
             {
@@ -199,14 +207,14 @@ namespace Assets.Resources.Scripts
             float angleOffset = 8f;//to visualize angle, use this link: https://www.visnos.com/demos/basic-angles
             float threshold = Mathf.Cos(Mathf.PI * angleOffset / 180);
             //check each vector from cell to its two closed neighbor is vertical
-            for(int i = 0; i < mImageTargetList.Count; i++)
+            for (int i = 0; i < mImageTargetList.Count; i++)
             {
                 int rowIndex = i / mCellColNum;
                 int colIndex = i % mCellColNum;
                 bool hasLeft = rowIndex - 1 >= 0;
                 bool hasRight = rowIndex + 1 <= mCellColNum - 1;
                 bool hasUp = colIndex - 1 >= 0;
-                bool hasDown= colIndex + 1 <= mCellRowNum - 1;
+                bool hasDown = colIndex + 1 <= mCellRowNum - 1;
                 int neighborIndex1, neighborIndex2;
                 if (hasLeft && hasUp)
                 {
@@ -214,13 +222,13 @@ namespace Assets.Resources.Scripts
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex - 1);
                     var v1 = new Vector2(mImageTargetList[neighborIndex1].transform.position.x, mImageTargetList[neighborIndex1].transform.position.y);
                     var v2 = new Vector2(mImageTargetList[neighborIndex2].transform.position.x, mImageTargetList[neighborIndex2].transform.position.y);
-                    if(Mathf.Abs(Vector2.Dot(v1, v2)) > threshold)
+                    if (Mathf.Abs(Vector2.Dot(v1, v2)) > threshold)
                     {
                         //considered as not vertical
                         return false;
                     }
                 }
-                if(hasLeft && hasDown)
+                if (hasLeft && hasDown)
                 {
                     neighborIndex1 = (rowIndex - 1) * mCellRowNum + colIndex;
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex + 1);
@@ -232,7 +240,7 @@ namespace Assets.Resources.Scripts
                         return false;
                     }
                 }
-                if(hasRight && hasUp)
+                if (hasRight && hasUp)
                 {
                     neighborIndex1 = (rowIndex + 1) * mCellRowNum + colIndex;
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex - 1);
@@ -244,7 +252,7 @@ namespace Assets.Resources.Scripts
                         return false;
                     }
                 }
-                if(hasRight && hasDown)
+                if (hasRight && hasDown)
                 {
                     neighborIndex1 = (rowIndex + 1) * mCellRowNum + colIndex;
                     neighborIndex2 = rowIndex * mCellRowNum + (colIndex + 1);
@@ -263,9 +271,9 @@ namespace Assets.Resources.Scripts
         private bool CheckIsAllMatch()
         {
             //if all cell are matched to the correct sequence, from the first one to last one, the indices should be from 0 to N.
-            for(int i = 0; i < mImageTargetList.Count; i++)
+            for (int i = 0; i < mImageTargetList.Count; i++)
             {
-                if(i != mImageTarget2ImageIndexDic[mImageTargetList[i]])
+                if (i != mImageTarget2ImageIndexDict[mImageTargetList[i]])
                 {
                     return false;
                 }
@@ -282,6 +290,11 @@ namespace Assets.Resources.Scripts
                 //check
                 if (CheckIsAllMatch())
                 {
+                    //display victory screen
+                    GameObject st = GameObject.Find("SolutionTarget");
+                    GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
+                    congrats.SetActive(true);
+
                     Debug.Log("Congratuations!!!");
                 }
             }
@@ -289,7 +302,73 @@ namespace Assets.Resources.Scripts
 
         public void Update()
         {
-            updateActList?.Invoke();
+            mUpdateActList?.Invoke();
+        }
+
+        public void Init(List<String> imageNameList)
+        {
+            //todo if it has more than one parameters, using dict 'cfg' to pass these parameters.
+            mImageNameList = imageNameList;
+            CreateAllImages();
+            //Test();
+        }
+
+        private void Test()
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                var cellObj = GameObject.Find(String.Format("cell{0}", i + 1));
+                if (cellObj != null)
+                {
+                    Renderer rend = cellObj.GetComponent<Renderer>();
+                    var texture = mTextureDict["hibiscus"][i];
+                    rend.material.mainTexture = texture;
+                }
+            }
+        }
+        private void CreateAllImages()
+        {
+            mTextureDict = new Dictionary<string, List<Texture2D>>();
+            for (int i = 0; i < mImageNameList.Count; i++)
+            {
+                var imageName = mImageNameList[i];
+                var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", imageName)) as Texture2D;
+                //split the original texture into 9 parts
+                var textureList = new List<Texture2D>();
+                int maxLen = Mathf.Max(originalTexture.width, originalTexture.height);//make it become a square image
+                int minWidth = (maxLen - originalTexture.width) / 2;
+                int maxWidth = (maxLen + originalTexture.width) / 2;
+                int minHeight = (maxLen - originalTexture.height) / 2;
+                int maxHeight = (maxLen + originalTexture.height) / 2;
+                for (int num = 0; num < 9; num++)
+                {
+                    var newTexture = new Texture2D(maxLen / 3, maxLen / 3, TextureFormat.ARGB32, false);
+                    for (int row = 0; row < maxLen / 3; row++)
+                    {
+                        for (int col = 0; col < maxLen / 3; col++)
+                        {
+                            //row,col starting from left-top
+                            int pixelRowIdx = row + (num % 3) * maxLen / 3;
+                            int pixelColIdx = col + (num / 3) * maxLen / 3;
+                            Color color = Color.white;
+                            //if row is inside [maxlen/2-width/2, maxlen/2+width/2), and col is inside [maxlen/2-height/2, maxlen/2+height/2)
+                            //take picture's color, otherwise, take white
+                            if (pixelRowIdx >= minWidth && pixelRowIdx < maxWidth && pixelColIdx >= minHeight && pixelColIdx < maxHeight)
+                            {
+                                //if row and col is [0, maxLen], and map the whole image
+                                //color = originalTexture.GetPixel(maxWidth - minWidth - (row - minWidth) - 1, maxHeight - minHeight - (col - minHeight) - 1);
+
+                                //color = originalTexture.GetPixel(maxWidth - pixelRowIdx - 1, maxHeight - pixelColIdx - 1);
+                                color = originalTexture.GetPixel(pixelRowIdx - minWidth, maxHeight - pixelColIdx - 1);
+                            }
+                            newTexture.SetPixel(maxLen / 3 - row + 1, col, color);
+                        }
+                    }
+                    newTexture.Apply();
+                    textureList.Add(newTexture);
+                }
+                mTextureDict.Add(imageName, textureList);
+            }
         }
     }
 }
