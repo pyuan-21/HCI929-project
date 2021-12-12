@@ -30,12 +30,14 @@ namespace Assets.Resources.Scripts
         private Dictionary<string, List<Texture2D>> mTextureDict;
         private int mCurrentImgIndex = 0;
         private List<String> mImageNameList;
+        private bool mGameOver;
 
         private GameLogic()
         {
             mImageTargetList = new List<GameObject>();
             mImageTarget2ImageIndexDict = new Dictionary<GameObject, int>();
             mHasInit = false;
+            mGameOver = false;
         }
 
         public void AddImageTarget(GameObject obj)
@@ -194,6 +196,7 @@ namespace Assets.Resources.Scripts
                 }
 
                 mHasInit = true;
+                mGameOver = false;
             }
             catch (Exception e)
             {
@@ -283,6 +286,10 @@ namespace Assets.Resources.Scripts
 
         private void CheckGameOver()
         {
+            if (mGameOver)
+            {
+                return;
+            }
             SortImageTargetList();
             if (CheckCellRectangle())
             {
@@ -290,12 +297,7 @@ namespace Assets.Resources.Scripts
                 //check
                 if (CheckIsAllMatch())
                 {
-                    //display victory screen
-                    GameObject st = GameObject.Find("SolutionTarget");
-                    GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
-                    congrats.SetActive(true);
-
-                    Debug.Log("Congratuations!!!");
+                    OnGameOver();
                 }
             }
         }
@@ -369,6 +371,40 @@ namespace Assets.Resources.Scripts
                 }
                 mTextureDict.Add(imageName, textureList);
             }
+        }
+
+        public void OnChangeImage()
+        {
+            mCurrentImgIndex = (mCurrentImgIndex + 1) % mImageNameList.Count;//choose next image
+            // restart game 
+            // consider two situation,
+            // 1) 9 markers are detecting
+            // 2) not all markers are inside camera(be detected)
+            if (mImageTargetList.Count >= mCellRowNum * mCellColNum)
+            {
+                OnInitGame();
+            }
+            else
+            {
+                mHasInit = false;//
+            }
+        }
+
+        private void OnGameOver()
+        {
+            mGameOver = true;
+
+            //display victory screen
+            GameObject st = GameObject.Find("SolutionTarget");
+            GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
+            congrats.SetActive(true);
+
+            Debug.Log("Congratuations!!!");
+        }
+
+        public String GetNextImageName()
+        {
+            return mImageNameList[mCurrentImgIndex];
         }
     }
 }
