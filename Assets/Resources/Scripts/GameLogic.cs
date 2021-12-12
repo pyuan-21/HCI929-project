@@ -376,10 +376,17 @@ namespace Assets.Resources.Scripts
         {
             mGameOver = false;
             mCurrentImgIndex = (mCurrentImgIndex + 1) % mImageNameList.Count;//choose next image
-            //restart game 
+            // restart game 
+            // consider two situation,
+            // 1) 9 markers are detecting
+            // 2) not all markers are inside camera(be detected)
             if (mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
                 OnInitGame();
+            }
+            else
+            {
+                mHasInit = false;//
             }
         }
 
