@@ -14,12 +14,21 @@ public class ImgButtonScript : MonoBehaviour
     {
         Vb.RegisterOnButtonPressed(onButtonPressed);
         Vb.RegisterOnButtonReleased(onButtonReleased);
-
+        setImage();
     }
 
     public void onButtonPressed(VirtualButtonBehaviour vb)
     {
         Debug.Log("********** IMAGE BUTTON PRESSED **********");
+    }
+
+    private void setImage()
+    {
+        GameObject st = GameObject.Find("SolutionTarget");
+        GameObject imageFull = (st.transform.Find("MountParent").gameObject).transform.GetChild(1).gameObject;
+        Renderer rend = imageFull.GetComponent<Renderer>();
+        var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", GameLogic.Instance.GetCurrentImageName())) as Texture2D;
+        rend.material.mainTexture = originalTexture;
     }
 
     public void onButtonReleased(VirtualButtonBehaviour vb)
@@ -33,11 +42,7 @@ public class ImgButtonScript : MonoBehaviour
         GameLogic.Instance.OnChangeImage();
 
         //change the texture of ImageFull (display full image)
-
-        GameObject imageFull = (st.transform.Find("MountParent").gameObject).transform.GetChild(1).gameObject;
-        Renderer rend = imageFull.GetComponent<Renderer>();
-        var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", GameLogic.Instance.GetCurrentImageName())) as Texture2D;
-        rend.material.mainTexture = originalTexture;
+        setImage();
     }
 
 }
