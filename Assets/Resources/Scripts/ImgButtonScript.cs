@@ -30,7 +30,7 @@ public class ImgButtonScript : MonoBehaviour
 
         //get the next image from ImageNameList
         //change the texture for the cell
-        GameLogic.Instance.OnNextGame();
+        GameLogic.Instance.OnChangeImage();
 
         //change the texture of ImageFull (display full image)
 

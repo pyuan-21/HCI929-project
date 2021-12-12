@@ -196,6 +196,7 @@ namespace Assets.Resources.Scripts
                 }
 
                 mHasInit = true;
+                mGameOver = false;
             }
             catch (Exception e)
             {
@@ -372,9 +373,8 @@ namespace Assets.Resources.Scripts
             }
         }
 
-        public void OnNextGame()
+        public void OnChangeImage()
         {
-            mGameOver = false;
             mCurrentImgIndex = (mCurrentImgIndex + 1) % mImageNameList.Count;//choose next image
             // restart game 
             // consider two situation,
