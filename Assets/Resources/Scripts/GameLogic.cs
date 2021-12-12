@@ -324,7 +324,7 @@ namespace Assets.Resources.Scripts
                 if (cellObj != null)
                 {
                     Renderer rend = cellObj.GetComponent<Renderer>();
-                    var texture = mTextureDict["hibiscus"][i];
+                    var texture = mTextureDict["sunflower"][i];
                     rend.material.mainTexture = texture;
                 }
             }
@@ -361,10 +361,11 @@ namespace Assets.Resources.Scripts
                                 //if row and col is [0, maxLen], and map the whole image
                                 //color = originalTexture.GetPixel(maxWidth - minWidth - (row - minWidth) - 1, maxHeight - minHeight - (col - minHeight) - 1);
 
-                                //color = originalTexture.GetPixel(maxWidth - pixelRowIdx - 1, maxHeight - pixelColIdx - 1);
-                                color = originalTexture.GetPixel(pixelRowIdx - minWidth, maxHeight - pixelColIdx - 1);
+                                color = originalTexture.GetPixel(-maxWidth + pixelRowIdx + 1, maxHeight - pixelColIdx - 1);
+                                //color = originalTexture.GetPixel(pixelRowIdx - minWidth, pixelColIdx - maxHeight);
                             }
                             newTexture.SetPixel(maxLen / 3 - row + 1, col, color);
+                            //newTexture.SetPixel(row, col, color);
                         }
                     }
                     newTexture.Apply();
