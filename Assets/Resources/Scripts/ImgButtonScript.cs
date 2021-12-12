@@ -36,7 +36,7 @@ public class ImgButtonScript : MonoBehaviour
 
         GameObject imageFull = (st.transform.Find("MountParent").gameObject).transform.GetChild(1).gameObject;
         Renderer rend = imageFull.GetComponent<Renderer>();
-        var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", GameLogic.Instance.GetNextImageName())) as Texture2D;
+        var originalTexture = UnityEngine.Resources.Load(String.Format("Images/{0}", GameLogic.Instance.GetCurrentImageName())) as Texture2D;
         rend.material.mainTexture = originalTexture;
     }
 

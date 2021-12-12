@@ -178,6 +178,7 @@ namespace Assets.Resources.Scripts
                 Debug.Log(String.Format("imageIndexList: {0}", imageIndexStr));
 
                 mImageTarget2ImageIndexDict.Clear();
+                var currentTexList = mTextureDict[GetCurrentImageName()];
                 for (int i = 0; i < mImageTargetList.Count; i++)
                 {
                     int imageIndex = imageIndexList[i];
@@ -189,7 +190,7 @@ namespace Assets.Resources.Scripts
                     if (imageIndex != 8)
                     {
                         //imageIndex = 8 make it blank
-                        texture = mTextureDict[mImageNameList[mCurrentImgIndex]][imageIndex];
+                        texture = currentTexList[imageIndex];
                     }
                     Renderer rend = cellObj.GetComponent<Renderer>();
                     rend.material.mainTexture = texture;
@@ -387,6 +388,7 @@ namespace Assets.Resources.Scripts
             else
             {
                 mHasInit = false;//
+                mGameOver = true;//wait for init
             }
         }
 
@@ -402,7 +404,7 @@ namespace Assets.Resources.Scripts
             Debug.Log("Congratuations!!!");
         }
 
-        public String GetNextImageName()
+        public String GetCurrentImageName()
         {
             return mImageNameList[mCurrentImgIndex];
         }
