@@ -433,6 +433,9 @@ namespace Assets.Resources.Scripts
             GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
             congrats.SetActive(true);
 
+            GameObject victoryUI = GameObject.Find("Canvas");
+            victoryUI.SetActive(true);
+
             Debug.Log("Congratuations!!!");
         }
 
