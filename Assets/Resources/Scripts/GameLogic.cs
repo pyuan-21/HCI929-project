@@ -42,6 +42,10 @@ namespace Assets.Resources.Scripts
 
         public void AddImageTarget(GameObject obj)
         {
+            if (!obj.name.Contains("ImageTarget"))
+            {
+                return;
+            }
             mImageTargetList.Add(obj);
             if (mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
@@ -58,6 +62,10 @@ namespace Assets.Resources.Scripts
 
         public void RemoveImageTarget(GameObject obj)
         {
+            if (!obj.name.Contains("ImageTarget"))
+            {
+                return;
+            }
             mImageTargetList.Remove(obj);
             if (mHasInit)
             {
@@ -115,6 +123,27 @@ namespace Assets.Resources.Scripts
                 imageIndexList[blankIndex] = temp;
                 blankIndex = newBlankIndex;
 
+                //move blank to bottom-right
+                while (rowIndex != mCellColNum - 1)
+                {
+                    rowIndex += 1;
+                    newBlankIndex = rowIndex * mCellRowNum + colIndex;
+                    temp = imageIndexList[newBlankIndex];
+                    imageIndexList[newBlankIndex] = imageIndexList[blankIndex];
+                    imageIndexList[blankIndex] = temp;
+                    blankIndex = newBlankIndex;
+                }
+                while (colIndex != mCellRowNum - 1)
+                {
+                    colIndex += 1;
+                    newBlankIndex = rowIndex * mCellRowNum + colIndex;
+                    temp = imageIndexList[newBlankIndex];
+                    imageIndexList[newBlankIndex] = imageIndexList[blankIndex];
+                    imageIndexList[blankIndex] = temp;
+                    blankIndex = newBlankIndex;
+                }
+
+                //check unmatched num
                 unMatchedNum = 0;
                 for (int i = 0; i < imageIndexList.Count; i++)
                 {
@@ -287,6 +316,7 @@ namespace Assets.Resources.Scripts
 
         private void CheckGameOver()
         {
+            Debug.Log(String.Format("CheckGameOver, {0}", mGameOver));
             if (mGameOver)
             {
                 return;
@@ -314,6 +344,7 @@ namespace Assets.Resources.Scripts
             mImageNameList = imageNameList;
             CreateAllImages();
             //Test();
+            GameObject.Find("TargetMenu").GetComponent<ImgButtonScript>().InitImage();
         }
 
         private void Test()
@@ -324,7 +355,7 @@ namespace Assets.Resources.Scripts
                 if (cellObj != null)
                 {
                     Renderer rend = cellObj.GetComponent<Renderer>();
-                    var texture = mTextureDict["hibiscus"][i];
+                    var texture = mTextureDict["sunflower"][i];
                     rend.material.mainTexture = texture;
                 }
             }
@@ -361,10 +392,11 @@ namespace Assets.Resources.Scripts
                                 //if row and col is [0, maxLen], and map the whole image
                                 //color = originalTexture.GetPixel(maxWidth - minWidth - (row - minWidth) - 1, maxHeight - minHeight - (col - minHeight) - 1);
 
-                                //color = originalTexture.GetPixel(maxWidth - pixelRowIdx - 1, maxHeight - pixelColIdx - 1);
-                                color = originalTexture.GetPixel(pixelRowIdx - minWidth, maxHeight - pixelColIdx - 1);
+                                color = originalTexture.GetPixel(-maxWidth + pixelRowIdx + 1, maxHeight - pixelColIdx - 1);
+                                //color = originalTexture.GetPixel(pixelRowIdx - minWidth, pixelColIdx - maxHeight);
                             }
                             newTexture.SetPixel(maxLen / 3 - row + 1, col, color);
+                            //newTexture.SetPixel(row, col, color);
                         }
                     }
                     newTexture.Apply();
@@ -400,6 +432,9 @@ namespace Assets.Resources.Scripts
             GameObject st = GameObject.Find("SolutionTarget");
             GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
             congrats.SetActive(true);
+
+            GameObject victoryUI = GameObject.Find("Canvas");
+            victoryUI.SetActive(true);
 
             Debug.Log("Congratuations!!!");
         }

@@ -14,12 +14,16 @@ public class ImgButtonScript : MonoBehaviour
     {
         Vb.RegisterOnButtonPressed(onButtonPressed);
         Vb.RegisterOnButtonReleased(onButtonReleased);
-        setImage();
     }
 
     public void onButtonPressed(VirtualButtonBehaviour vb)
     {
         Debug.Log("********** IMAGE BUTTON PRESSED **********");
+    }
+
+    public void InitImage()
+    {
+        setImage();
     }
 
     private void setImage()
@@ -36,6 +40,8 @@ public class ImgButtonScript : MonoBehaviour
         GameObject st = GameObject.Find("SolutionTarget");
         GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
         congrats.SetActive(false);
+        GameObject victoryUI = GameObject.Find("Canvas");
+        victoryUI.SetActive(false);
 
         //get the next image from ImageNameList
         //change the texture for the cell
