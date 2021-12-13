@@ -38,6 +38,7 @@ namespace Assets.Resources.Scripts
             mImageTarget2ImageIndexDict = new Dictionary<GameObject, int>();
             mHasInit = false;
             mGameOver = false;
+            mUpdateActList += CheckGameOver;
         }
 
         public void AddImageTarget(GameObject obj)
@@ -53,10 +54,6 @@ namespace Assets.Resources.Scripts
                 {
                     OnInitGame();
                 }
-                else
-                {
-                    mUpdateActList += CheckGameOver;
-                }
             }
         }
 
@@ -67,10 +64,10 @@ namespace Assets.Resources.Scripts
                 return;
             }
             mImageTargetList.Remove(obj);
-            if (mHasInit)
-            {
-                mUpdateActList -= CheckGameOver;
-            }
+            //if (mHasInit)
+            //{
+            //    mUpdateActList -= CheckGameOver;
+            //}
         }
 
         private void Randomize(ref List<int> imageIndexList, int blankIndex, int needUnMatchedNum)
@@ -82,49 +79,57 @@ namespace Assets.Resources.Scripts
             System.Random random = new System.Random();
             int unMatchedNum;
             int stepNum = 0;
-            while (stepNum < 100)
+            int newBlankIndex = -1;
+            int temp = -1;
+            for (int iter = 0; iter < 100; iter++)
             {
-                movableDirList.Clear();
-                if (rowIndex - 1 >= 0)
+                //move randomly
+                while (stepNum < 100)
                 {
-                    movableDirList.Add(0);//left
+                    movableDirList.Clear();
+                    if (rowIndex - 1 >= 0)
+                    {
+                        movableDirList.Add(0);//left
+                    }
+                    if (rowIndex + 1 <= mCellColNum - 1)
+                    {
+                        movableDirList.Add(1);//right
+                    }
+                    if (colIndex - 1 >= 0)
+                    {
+                        movableDirList.Add(2);//up
+                    }
+                    if (colIndex + 1 <= mCellRowNum - 1)
+                    {
+                        movableDirList.Add(3);//down
+                    }
+                    dir = movableDirList[random.Next(movableDirList.Count)];
+                    switch (dir)
+                    {
+                        case 0:
+                            rowIndex -= 1;
+                            break;
+                        case 1:
+                            rowIndex += 1;
+                            break;
+                        case 2:
+                            colIndex -= 1;
+                            break;
+                        case 3:
+                            colIndex += 1;
+                            break;
+                    }
+                    newBlankIndex = rowIndex * mCellRowNum + colIndex;
+                    temp = imageIndexList[newBlankIndex];
+                    imageIndexList[newBlankIndex] = imageIndexList[blankIndex];
+                    imageIndexList[blankIndex] = temp;
+                    blankIndex = newBlankIndex;
+
+                    stepNum++;
                 }
-                if (rowIndex + 1 <= mCellColNum - 1)
-                {
-                    movableDirList.Add(1);//right
-                }
-                if (colIndex - 1 >= 0)
-                {
-                    movableDirList.Add(2);//up
-                }
-                if (colIndex + 1 <= mCellRowNum - 1)
-                {
-                    movableDirList.Add(3);//down
-                }
-                dir = movableDirList[random.Next(movableDirList.Count)];
-                switch (dir)
-                {
-                    case 0:
-                        rowIndex -= 1;
-                        break;
-                    case 1:
-                        rowIndex += 1;
-                        break;
-                    case 2:
-                        colIndex -= 1;
-                        break;
-                    case 3:
-                        colIndex += 1;
-                        break;
-                }
-                int newBlankIndex = rowIndex * mCellRowNum + colIndex;
-                int temp = imageIndexList[newBlankIndex];
-                imageIndexList[newBlankIndex] = imageIndexList[blankIndex];
-                imageIndexList[blankIndex] = temp;
-                blankIndex = newBlankIndex;
 
                 //move blank to bottom-right
-                while(rowIndex != mCellColNum - 1)
+                while (rowIndex != mCellColNum - 1)
                 {
                     rowIndex += 1;
                     newBlankIndex = rowIndex * mCellRowNum + colIndex;
@@ -156,8 +161,8 @@ namespace Assets.Resources.Scripts
                 {
                     break;
                 }
-                stepNum++;
             }
+            
         }
 
         private void SortImageTargetList()
@@ -316,19 +321,22 @@ namespace Assets.Resources.Scripts
 
         private void CheckGameOver()
         {
-            Debug.Log(String.Format("CheckGameOver, {0}", mGameOver));
-            if (mGameOver)
+            if(mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
-                return;
-            }
-            SortImageTargetList();
-            if (CheckCellRectangle())
-            {
-                Debug.Log("CheckCellRectangle!!!");
-                //check
-                if (CheckIsAllMatch())
+                Debug.Log(String.Format("CheckGameOver, {0}", mGameOver));
+                if (mGameOver)
                 {
-                    OnGameOver();
+                    return;
+                }
+                SortImageTargetList();
+                if (CheckCellRectangle())
+                {
+                    Debug.Log("CheckCellRectangle!!!");
+                    //check
+                    if (CheckIsAllMatch())
+                    {
+                        OnGameOver();
+                    }
                 }
             }
         }
