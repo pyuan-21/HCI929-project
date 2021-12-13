@@ -123,6 +123,27 @@ namespace Assets.Resources.Scripts
                 imageIndexList[blankIndex] = temp;
                 blankIndex = newBlankIndex;
 
+                //move blank to bottom-right
+                while(rowIndex != mCellColNum - 1)
+                {
+                    rowIndex += 1;
+                    newBlankIndex = rowIndex * mCellRowNum + colIndex;
+                    temp = imageIndexList[newBlankIndex];
+                    imageIndexList[newBlankIndex] = imageIndexList[blankIndex];
+                    imageIndexList[blankIndex] = temp;
+                    blankIndex = newBlankIndex;
+                }
+                while (colIndex != mCellRowNum - 1)
+                {
+                    colIndex += 1;
+                    newBlankIndex = rowIndex * mCellRowNum + colIndex;
+                    temp = imageIndexList[newBlankIndex];
+                    imageIndexList[newBlankIndex] = imageIndexList[blankIndex];
+                    imageIndexList[blankIndex] = temp;
+                    blankIndex = newBlankIndex;
+                }
+
+                //check unmatched num
                 unMatchedNum = 0;
                 for (int i = 0; i < imageIndexList.Count; i++)
                 {
@@ -295,6 +316,7 @@ namespace Assets.Resources.Scripts
 
         private void CheckGameOver()
         {
+            Debug.Log(String.Format("CheckGameOver, {0}", mGameOver));
             if (mGameOver)
             {
                 return;
@@ -322,6 +344,7 @@ namespace Assets.Resources.Scripts
             mImageNameList = imageNameList;
             CreateAllImages();
             //Test();
+            GameObject.Find("TargetMenu").GetComponent<ImgButtonScript>().InitImage();
         }
 
         private void Test()

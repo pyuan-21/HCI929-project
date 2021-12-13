@@ -14,12 +14,16 @@ public class ImgButtonScript : MonoBehaviour
     {
         Vb.RegisterOnButtonPressed(onButtonPressed);
         Vb.RegisterOnButtonReleased(onButtonReleased);
-        setImage();
     }
 
     public void onButtonPressed(VirtualButtonBehaviour vb)
     {
         Debug.Log("********** IMAGE BUTTON PRESSED **********");
+    }
+
+    public void InitImage()
+    {
+        setImage();
     }
 
     private void setImage()
