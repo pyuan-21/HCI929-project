@@ -42,6 +42,10 @@ namespace Assets.Resources.Scripts
 
         public void AddImageTarget(GameObject obj)
         {
+            if (!obj.name.Contains("ImageTarget"))
+            {
+                return;
+            }
             mImageTargetList.Add(obj);
             if (mImageTargetList.Count >= mCellRowNum * mCellColNum)
             {
@@ -58,6 +62,10 @@ namespace Assets.Resources.Scripts
 
         public void RemoveImageTarget(GameObject obj)
         {
+            if (!obj.name.Contains("ImageTarget"))
+            {
+                return;
+            }
             mImageTargetList.Remove(obj);
             if (mHasInit)
             {
