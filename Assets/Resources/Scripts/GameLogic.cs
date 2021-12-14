@@ -454,5 +454,21 @@ namespace Assets.Resources.Scripts
         {
             return mImageNameList[mCurrentImgIndex];
         }
+
+        public void AddUpdateFunction(Action cb)
+        {
+            if (cb != null)
+            {
+                mUpdateActList += cb;
+            }
+        }
+
+        public void RemoveUpdateFunction(Action cb)
+        {
+            if (cb != null)
+            {
+                mUpdateActList -= cb;
+            }
+        }
     }
 }
