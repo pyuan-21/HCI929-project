@@ -44,7 +44,7 @@ public class ImgButtonScript : MonoBehaviour
         GameObject vicUI = GameObject.Find("VictoryUI");
         GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
         image.SetActive(false);
-
+               
         //get the next image from ImageNameList
         //change the texture for the cell
         GameLogic.Instance.OnChangeImage();
@@ -52,6 +52,7 @@ public class ImgButtonScript : MonoBehaviour
         //change the texture of ImageFull (display full image)
         setImage();
     }
+   
 
   
 }
