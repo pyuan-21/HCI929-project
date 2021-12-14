@@ -447,15 +447,7 @@ namespace Assets.Resources.Scripts
             GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
             image.SetActive(true);
 
-            Invoke("SetFalse", 4.0f);
-
             Debug.Log("Congratuations!!!");
-        }
-        void SetFalse()
-        {
-            GameObject vicUI = GameObject.Find("VictoryUI");
-            GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
-            image.SetActive(false);
         }
 
         public String GetCurrentImageName()
