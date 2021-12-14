@@ -11,6 +11,8 @@ public class GameLoop : MonoBehaviour
 {
     [SerializeField]
     public List<String> imageNameList;
+    [SerializeField]
+    public int blankMarkerIndex;//from 1 to 9. This index should be the index of background's marker.
 
     void Start()
     {
@@ -29,7 +31,7 @@ public class GameLoop : MonoBehaviour
         }
         Debug.Log("GameLoop.OnVuforiaInitialized");
 
-        GameLogic.Instance.Init(imageNameList);
+        GameLogic.Instance.Init(imageNameList, blankMarkerIndex);
     }
     private void Update()
     {
