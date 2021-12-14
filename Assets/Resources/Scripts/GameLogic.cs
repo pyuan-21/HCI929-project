@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+
 
 namespace Assets.Resources.Scripts
 {
@@ -437,9 +439,14 @@ namespace Assets.Resources.Scripts
             mGameOver = true;
 
             //display victory screen
-            GameObject st = GameObject.Find("SolutionTarget");
-            GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
-            congrats.SetActive(true);
+            //GameObject st = GameObject.Find("SolutionTarget");
+            //GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
+            //congrats.SetActive(true);
+
+            GameObject vicUI = GameObject.Find("VictoryUI");
+            GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
+            image.SetActive(true);
+
 
             Debug.Log("Congratuations!!!");
         }

@@ -37,9 +37,13 @@ public class ImgButtonScript : MonoBehaviour
 
     public void onButtonReleased(VirtualButtonBehaviour vb)
     {
-        GameObject st = GameObject.Find("SolutionTarget");
-        GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
-        congrats.SetActive(false);
+        //GameObject st = GameObject.Find("SolutionTarget");
+        //GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
+        //congrats.SetActive(false);
+
+        GameObject vicUI = GameObject.Find("VictoryUI");
+        GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
+        image.SetActive(false);
 
         //get the next image from ImageNameList
         //change the texture for the cell
@@ -49,4 +53,5 @@ public class ImgButtonScript : MonoBehaviour
         setImage();
     }
 
+  
 }
