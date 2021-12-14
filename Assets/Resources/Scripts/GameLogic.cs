@@ -33,17 +33,11 @@ namespace Assets.Resources.Scripts
         private int mCurrentImgIndex = 0;
         private List<String> mImageNameList;
         private bool mGameOver;
-<<<<<<< Updated upstream
         private int mBlankMarkerIndex;//from 1 to 9, be corresponding to ImageTarget in scene. This index should be the index of background's marker.
         private int delayID;
         private List<ValueTuple<int, float, Action>> delayList;//delayID, delayTime, delayCallBack
         private int delayID_NextGame;//auto start next game's delayID
         private List<String> solution;
-=======
-        private int mBlankMarkerIndex;//from 1 to 9, be corresponding to ImageTarget in scene.
-        private int delayID;
-        private List<ValueTuple<int, float, Action>> delayList;
->>>>>>> Stashed changes
 
         private GameLogic()
         {
@@ -55,11 +49,8 @@ namespace Assets.Resources.Scripts
             mUpdateActList += UpdateDelayFunc;
             delayID = 0;
             delayList = new List<(int, float, Action)>();
-<<<<<<< Updated upstream
             delayID_NextGame = -1;
             solution = new List<string>();
-=======
->>>>>>> Stashed changes
         }
 
         public void AddImageTarget(GameObject obj)
@@ -260,14 +251,6 @@ namespace Assets.Resources.Scripts
             try
             {
                 SortImageTargetList();
-
-                for(int i = 0; i < mImageTargetList.Count; i++)
-                {
-                    if(mImageTargetList[i].name == String.Format("ImageTarget{0}", mBlankMarkerIndex))
-                    {
-                        //todoYUAN
-                    }
-                }
 
                 //correct image index arrange like 0,1,2,3,...,mCellRowNum*mCellColNum-1
                 List<int> imageIndexList = new List<int>();
@@ -579,7 +562,6 @@ namespace Assets.Resources.Scripts
             }
         }
 
-<<<<<<< Updated upstream
         /// <summary>
         /// Add delay function, delay 'time' seconds then call 'cb'
         /// </summary>
@@ -590,23 +572,13 @@ namespace Assets.Resources.Scripts
         {
             int id = delayID;
             delayList.Add(new ValueTuple<int, float, Action>(id, time, cb));
-=======
-        public int AddDelayFunc(float time, Action cb)
-        {
-            int id = delayID;
-            delayList.Add(new(id, time, cb));
->>>>>>> Stashed changes
             delayID++;
             return id;
         }
 
         public void RemoveDelayFunc(int delayID)
         {
-<<<<<<< Updated upstream
             for (int i = 0; i < delayList.Count; i++)
-=======
-            for(int i = 0; i < delayList.Count; i++)
->>>>>>> Stashed changes
             {
                 if (delayList[i].Item1 == delayID)
                 {
@@ -619,27 +591,16 @@ namespace Assets.Resources.Scripts
         private void UpdateDelayFunc()
         {
             float delta = Time.deltaTime;
-<<<<<<< Updated upstream
             for (int i = delayList.Count - 1; i >= 0; i--)
             {
                 delayList[i] = new ValueTuple<int, float, Action>(delayList[i].Item1, delayList[i].Item2 - delta, delayList[i].Item3);
                 if (delayList[i].Item2 <= 0)
                 {
                     delayList[i].Item3?.Invoke();
-=======
-            for(int i = delayList.Count - 1; i >= 0; i++)
-            {
-                var delay = delayList[i];
-                delay.Item2 -= delta;
-                if (delay.Item2 <= 0)
-                {
-                    delay.Item3?.Invoke();
->>>>>>> Stashed changes
                     delayList.RemoveAt(i);
                 }
             }
         }
-<<<<<<< Updated upstream
 
         public void OnNextGame()
         {
@@ -653,7 +614,5 @@ namespace Assets.Resources.Scripts
 
             OnChangeImage();
         }
-=======
->>>>>>> Stashed changes
     }
 }

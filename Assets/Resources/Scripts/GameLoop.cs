@@ -12,11 +12,7 @@ public class GameLoop : MonoBehaviour
     [SerializeField]
     public List<String> imageNameList;
     [SerializeField]
-<<<<<<< Updated upstream
     public int blankMarkerIndex;//from 1 to 9. This index should be the index of background's marker.
-=======
-    public int blankMarkerIndex;//from 1 to 9
->>>>>>> Stashed changes
 
     void Start()
     {
