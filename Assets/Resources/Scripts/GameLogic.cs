@@ -443,13 +443,26 @@ namespace Assets.Resources.Scripts
             //GameObject congrats = (st.transform.Find("MountParent").gameObject).transform.GetChild(0).gameObject;
             //congrats.SetActive(true);
 
-            GameObject vicUI = GameObject.Find("VictoryUI");
-            GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
-            image.SetActive(true);
+
+            MonoBehaviour _mb = GameObject.FindObjectOfType<MonoBehaviour>();
+            if (_mb != null)
+            {
+                _mb.StartCoroutine(Coroutine());
+            }
 
             Debug.Log("Congratuations!!!");
         }
 
+        IEnumerator Coroutine()
+        {
+            GameObject vicUI = GameObject.Find("VictoryUI");
+            GameObject image = vicUI.transform.GetChild(2).gameObject; //Image2
+            image.SetActive(true);
+
+            yield return new WaitForSeconds(5);
+
+            image.SetActive(false);
+        }
         public String GetCurrentImageName()
         {
             return mImageNameList[mCurrentImgIndex];
